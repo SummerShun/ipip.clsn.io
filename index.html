@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IP Lookup</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4280799943500919" crossorigin="anonymous" type="0114b528a0ece7fee72d7dae-text/javascript"></script>
-     <script type="0114b528a0ece7fee72d7dae-text/javascript">
-         !function(p){"use strict";!function(t){var s=window,e=document,i=p,c="".concat("https:"===e.location.protocol?"https://":"http://","sdk.51.la/js-sdk-pro.min.js"),n=e.createElement("script"),r=e.getElementsByTagName("script")[0];n.type="text/javascript",n.setAttribute("charset","UTF-8"),n.async=!0,n.src=c,n.id="LA_COLLECT",i.d=n;var o=function(){s.LA.ids.push(i)};s.LA?s.LA.ids&&o():(s.LA=p,s.LA.ids=[],o()),r.parentNode.insertBefore(n,r)}()}({id:"3IitfS2X2D7yIn8M",ck:"3IitfS2X2D7yIn8M"});
-     </script>
-     <script type="0114b528a0ece7fee72d7dae-text/javascript">
-       !(function(c,i,e,b){
-       var h=i.createElement("script");
-       var f=i.getElementsByTagName("script")[0];
-       h.type="text/javascript";
-       h.crossorigin=true;
-       h.onload=function(){new c[b]["Monitor"]().init({id:"3IiuMsALzD6IY5uV",sendSpaPv:true});};
-       f.parentNode.insertBefore(h,f);h.src=e;})(window,document,"https://sdk.51.la/perf/js-sdk-perf.min.js","LingQue");
-     </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4280799943500919" crossorigin="anonymous" onerror="handleScriptError('adsbygoogle')"></script>
+    <script>
+        !function(p){"use strict";!function(t){var s=window,e=document,i=p,c="".concat("https:"===e.location.protocol?"https://":"http://","sdk.51.la/js-sdk-pro.min.js"),n=e.createElement("script"),r=e.getElementsByTagName("script")[0];n.type="text/javascript",n.setAttribute("charset","UTF-8"),n.async=!0,n.src=c,n.id="LA_COLLECT",i.d=n;var o=function(){s.LA.ids.push(i)};s.LA?s.LA.ids&&o():(s.LA=p,s.LA.ids=[],o()),r.parentNode.insertBefore(n,r)}()}({id:"3IitfS2X2D7yIn8M",ck:"3IitfS2X2D7yIn8M"});
+    </script>
+    <script>
+        !(function(c,i,e,b){
+        var h=i.createElement("script");
+        var f=i.getElementsByTagName("script")[0];
+        h.type="text/javascript";
+        h.crossorigin=true;
+        h.onload=function(){new c[b]["Monitor"]().init({id:"3IiuMsALzD6IY5uV",sendSpaPv:true});};
+        h.onerror = function() { handleScriptError('LingQue'); };
+        f.parentNode.insertBefore(h,f);h.src=e;})(window,document,"https://sdk.51.la/perf/js-sdk-perf.min.js","LingQue");
+    </script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -59,6 +61,15 @@
             overflow-x: auto;
             white-space: pre-wrap;
             word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace; /* 改变字体样式 */
+            font-size: 14px; /* 调整字体大小 */
+            line-height: 1.5; /* 调整行高 */
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -70,9 +81,17 @@
         <div class="result" id="result">
             <h2>IP Information:</h2>
             <pre id="ipInfo">Loading...</pre>
+            <div id="map"></div>
         </div>
     </div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
+        function handleScriptError(scriptName) {
+            console.error(`Error loading script: ${scriptName}`);
+        }
+
+        let map;
+
         document.addEventListener('DOMContentLoaded', () => {
             lookupIP();
         });
@@ -99,6 +118,22 @@ Current Time: ${new Date(data.currentTime).toLocaleString()}
                     if (!ipInput) {
                         document.getElementById('ipInput').value = data.ip;
                     }
+
+                    if (map) {
+                        map.remove();
+                    }
+                    // 初始化地图并设置视图到指定的经纬度，缩放级别为6
+                    map = L.map('map').setView([data.latitude, data.longitude], 6);
+
+                    // 使用 OpenStreetMap 瓦片图层
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+
+                    // 添加标记到指定的经纬度
+                    L.marker([data.latitude, data.longitude]).addTo(map)
+                        .bindPopup(`Location: ${data.city}, ${data.region}, ${data.country}`)
+                        .openPopup();
                 })
                 .catch(error => {
                     document.getElementById('ipInfo').innerText = 'Error fetching IP information';

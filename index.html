@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e2f;
+            color: white;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .result pre {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IP Lookup</h1>
+        <input type="text" id="ipInput" placeholder="Enter IP address">
+        <button onclick="lookupIP()">IP Lookup</button>
+        <div class="result" id="result">
+            <h2>IP Information:</h2>
+            <pre id="ipInfo">Loading...</pre>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lookupIP();
+        });
+
+        function lookupIP() {
+            const ipInput = document.getElementById('ipInput').value;
+            const ipAddress = ipInput ? `ip.clsn.io/ip/${ipInput}` : 'ip.clsn.io/';
+            fetch(`https://${ipAddress}`)
+                .then(response => response.json())
+                .then(data => {
+                    const ipInfo = `
+IP: ${data.ip}
+Country: ${data.country}
+Region: ${data.region ? data.region : 'undefined'}
+City: ${data.city}
+Timezone: ${data.timezone}
+Latitude: ${data.latitude}
+Longitude: ${data.longitude}
+ISP: ${data.isp}
+Google Maps: ${data.googleMapsLink}
+Current Time: ${new Date(data.currentTime).toLocaleString()}
+                    `;
+                    document.getElementById('ipInfo').innerText = ipInfo;
+                    if (!ipInput) {
+                        document.getElementById('ipInput').value = data.ip;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('ipInfo').innerText = 'Error fetching IP information';
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>
